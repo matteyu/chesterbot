@@ -39,19 +39,18 @@ async function fastMath(count, answered, currScores){
 		var secondNum = fastMathQuestionGenerator(1, 100)
 		var anserKey = firstNum + secondNum
 		if(questionCount == 1){
-			botGame.postMessageToChannel('chester', questionCount + ') What is ' + firstNum + ' + ' + secondNum + ' ?', params)
+			botGame.postMessageToChannel('gamers', questionCount + ') What is ' + firstNum + ' + ' + secondNum + ' ?', params)
 		}
 		
 		if(correctAnswered){
 			correctAnswered = false
-			botGame.postMessageToChannel('chester', questionCount + ') What is ' + firstNum + ' + ' + secondNum + ' ?', params)
+			botGame.postMessageToChannel('gamers', questionCount + ') What is ' + firstNum + ' + ' + secondNum + ' ?', params)
 		}
 		
 		botGame.on('message', async function(data){
 			if(!isNaN(data.text)){
 				if(anserKey == Number(data.text)){
 					let fastMathLock = await fs.readFileSync('lockAnswer', 'utf8');
-					console.log(fastMathLock)
 					if(fastMathLock === '0' && fastMathLock !== ''){
 						// lock the file
 						fs.writeFile("lockAnswer", "1", function(err){
@@ -61,6 +60,7 @@ async function fastMath(count, answered, currScores){
 						})
 
 						let fastUser = await botGame.getUserById(data.user)
+						console.log(fastUser)
 						let users = await api.get(process.env.chesterapi + '/getallusers')
 						userColl = users.data
 
@@ -144,7 +144,7 @@ async function fastMath(count, answered, currScores){
 							var params = {
 								icon_emoji: ':chester:'
 							}
-							data.bot.postMessageToChannel('chester', 'Meowwww Correct! ' + ' Good job ' + data.username + '!', params)
+							data.bot.postMessageToChannel('gamers', 'Meowwww Correct! ' + ' Good job ' + data.username + '!', params)
 							
 							data.bot.removeAllListeners()
 
@@ -171,7 +171,7 @@ async function fastMath(count, answered, currScores){
 		})
 	}
 	else{
-		botGame.postMessageToChannel('chester', 'Well done!! Saving scores to the leaderboard. MEOW! Check your scores with "show me scores chester"', params)
+		botGame.postMessageToChannel('gamers', 'Well done!! Saving scores to the leaderboard. MEOW! Check your scores with "show me scores chester"', params)
 
 		setTimeout(async function(){},2000)
 		//save scores to the leaderboard
@@ -203,9 +203,9 @@ bot.on('message', async function(data) {
 				var params = {
 					icon_emoji: ':chester:'
 				}
-				bot.postMessageToChannel('chester', '*Lets play!  you are all my :squirrel: now!*', params)
+				bot.postMessageToChannel('gamers', '*Lets play!  you are all my :squirrel: now!*', params)
 				setTimeout(function(){
-					bot.postMessageToChannel('chester', 'Randomly choosing a game...', params)
+					bot.postMessageToChannel('gamers', 'Randomly choosing a game...', params)
 		
 					setTimeout(function(){
 						setTimeout(function(){
@@ -215,14 +215,14 @@ bot.on('message', async function(data) {
 
 							//randomize games here
 							//Fast Math game
-							bot.postMessageToChannel('chester', '*Fast Math!*', params)
+							bot.postMessageToChannel('gamers', '*Fast Math!*', params)
 							setTimeout(function(){
-								bot.postMessageToChannel('chester', '~~~Rules:  I ask 20 questions, fastest person to answer them gets a point!~~~', params)
+								bot.postMessageToChannel('gamers', '~~~Rules:  I ask 20 questions, fastest person to answer them gets a point!~~~', params)
 								setTimeout(function(){
-									bot.postMessageToChannel('chester', 'Ready.......', params)
+									bot.postMessageToChannel('gamers', 'Ready.......', params)
 		
 									setTimeout(function(){
-										bot.postMessageToChannel('chester', 'GO!', params)
+										bot.postMessageToChannel('gamers', 'GO!', params)
 		
 										setTimeout(function(){	
 											fastMath(1, false, [])
@@ -256,7 +256,7 @@ bot.on('message', async function(data) {
 		let users = await api.get(process.env.chesterapi + '/getallusers')
 		userColl = users.data
 		userColl.map(obj => {
-			bot.postMessageToChannel('chester', obj.Name + ' : ' + obj.Score + ' points', params)
+			bot.postMessageToChannel('gamers', obj.Name + ' : ' + obj.Score + ' points', params)
 		})
 	}
 });
