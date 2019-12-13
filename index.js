@@ -52,7 +52,6 @@ async function fastMath(count, answered, currScores){
 				if(anserKey == Number(data.text)){
 					let fastMathLock = await fs.readFileSync('lockAnswer', 'utf8');
 					if(botGame !== undefined){
-						console.log("in")
 						botGame.removeAllListeners()
 						if(fastMathLock === '0'){
 							botGame = new SlackBot({
