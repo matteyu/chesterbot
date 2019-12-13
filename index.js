@@ -52,7 +52,7 @@ async function fastMath(count, answered, currScores){
 				if(anserKey == Number(data.text)){
 					let fastMathLock = await fs.readFileSync('lockAnswer', 'utf8');
 					
-					if(fastMathLock === ''){
+					if(fastMathLock === '0'){
 						// lock the file
 						fs.writeFile("lockAnswer", "1", function(err){
 							if(err){
@@ -160,7 +160,7 @@ async function fastMath(count, answered, currScores){
 
 						
 						// unlock the file
-						fs.writeFile("lockAnswer", "", function(err){
+						fs.writeFile("lockAnswer", "0", function(err){
 							if(err){
 								return console.log(err)
 							}
