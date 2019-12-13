@@ -55,7 +55,7 @@ async function fastMath(count, answered, currScores){
 						console.log("in")
 						botGame.removeAllListeners()
 						if(fastMathLock === '0'){
-							var botGame = new SlackBot({
+							botGame = new SlackBot({
 								token: process.env.slack,
 								name: 'Chester'
 							});
