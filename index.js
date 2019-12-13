@@ -44,7 +44,17 @@ async function fastMath(count, answered, currScores){
 		
 		if(correctAnswered){
 			correctAnswered = false
-			botGame.postMessageToChannel('chester', questionCount + ') What is ' + firstNum + ' + ' + secondNum + ' ?', params)
+			var dataQuestions = {
+				count:questionCount,
+				first: firstNum,
+				second: secondNum,
+				param: params
+			}
+
+			setTimeout(function(data){
+				botGame.postMessageToChannel('chester', data.count + ') What is ' + data.first + ' + ' + data.second + ' ?', data.param)
+			},2000,dataQuestions)
+			
 		}
 		
 		botGame.on('message', async function(data){
