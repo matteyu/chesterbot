@@ -51,9 +51,12 @@ async function fastMath(count, answered, currScores){
 			if(!isNaN(data.text)){
 				if(anserKey == Number(data.text)){
 					let fastMathLock = await fs.readFileSync('lockAnswer', 'utf8');
-
+					botGame.removeAllListeners()
 					if(fastMathLock === '0'){
-						fastMathLock = '1'
+						var botGame = new SlackBot({
+							token: process.env.slack,
+							name: 'Chester'
+						});
 						// lock the file
 						fs.writeFile("lockAnswer", "1", function(err){
 							if(err){
