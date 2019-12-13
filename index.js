@@ -39,12 +39,12 @@ async function fastMath(count, answered, currScores){
 		var secondNum = fastMathQuestionGenerator(1, 100)
 		var anserKey = firstNum + secondNum
 		if(questionCount == 1){
-			botGame.postMessageToChannel('gamers', questionCount + ') What is ' + firstNum + ' + ' + secondNum + ' ?', params)
+			botGame.postMessageToChannel('chester', questionCount + ') What is ' + firstNum + ' + ' + secondNum + ' ?', params)
 		}
 		
 		if(correctAnswered){
 			correctAnswered = false
-			botGame.postMessageToChannel('gamers', questionCount + ') What is ' + firstNum + ' + ' + secondNum + ' ?', params)
+			botGame.postMessageToChannel('chester', questionCount + ') What is ' + firstNum + ' + ' + secondNum + ' ?', params)
 		}
 		
 		botGame.on('message', async function(data){
@@ -149,7 +149,7 @@ async function fastMath(count, answered, currScores){
 								var params = {
 									icon_emoji: ':chester:'
 								}
-								data.bot.postMessageToChannel('gamers', 'Meowwww Correct! ' + ' Good job ' + data.username + '!', params)
+								data.bot.postMessageToChannel('chester', 'Meowwww Correct! ' + ' Good job ' + data.username + '!', params)
 								
 								data.bot.removeAllListeners()
 
@@ -177,7 +177,7 @@ async function fastMath(count, answered, currScores){
 		})
 	}
 	else{
-		botGame.postMessageToChannel('gamers', 'Well done!! Saving scores to the leaderboard. MEOW! Check your scores with "show me scores chester"', params)
+		botGame.postMessageToChannel('chester', 'Well done!! Saving scores to the leaderboard. MEOW! Check your scores with "show me scores chester"', params)
 
 		setTimeout(async function(){},2000)
 		//save scores to the leaderboard
@@ -209,9 +209,9 @@ bot.on('message', async function(data) {
 				var params = {
 					icon_emoji: ':chester:'
 				}
-				bot.postMessageToChannel('gamers', '*Lets play!  you are all my :squirrel: now!*', params)
+				bot.postMessageToChannel('chester', '*Lets play!  you are all my :squirrel: now!*', params)
 				setTimeout(function(){
-					bot.postMessageToChannel('gamers', 'Randomly choosing a game...', params)
+					bot.postMessageToChannel('chester', 'Randomly choosing a game...', params)
 		
 					setTimeout(function(){
 						setTimeout(function(){
@@ -221,14 +221,14 @@ bot.on('message', async function(data) {
 
 							//randomize games here
 							//Fast Math game
-							bot.postMessageToChannel('gamers', '*Fast Math!*', params)
+							bot.postMessageToChannel('chester', '*Fast Math!*', params)
 							setTimeout(function(){
-								bot.postMessageToChannel('gamers', '~~~Rules:  I ask 20 questions, fastest person to answer them gets a point!~~~', params)
+								bot.postMessageToChannel('chester', '~~~Rules:  I ask 20 questions, fastest person to answer them gets a point!~~~', params)
 								setTimeout(function(){
-									bot.postMessageToChannel('gamers', 'Ready.......', params)
+									bot.postMessageToChannel('chester', 'Ready.......', params)
 		
 									setTimeout(function(){
-										bot.postMessageToChannel('gamers', 'GO!', params)
+										bot.postMessageToChannel('chester', 'GO!', params)
 		
 										setTimeout(function(){	
 											fastMath(1, false, [])
@@ -262,7 +262,7 @@ bot.on('message', async function(data) {
 		let users = await api.get(process.env.chesterapi + '/getallusers')
 		userColl = users.data
 		userColl.map(obj => {
-			bot.postMessageToChannel('gamers', obj.Name + ' : ' + obj.Score + ' points', params)
+			bot.postMessageToChannel('chester', obj.Name + ' : ' + obj.Score + ' points', params)
 		})
 	}
 });
