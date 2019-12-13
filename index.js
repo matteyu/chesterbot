@@ -51,124 +51,126 @@ async function fastMath(count, answered, currScores){
 			if(!isNaN(data.text)){
 				if(anserKey == Number(data.text)){
 					let fastMathLock = await fs.readFileSync('lockAnswer', 'utf8');
-					botGame.removeAllListeners()
-					if(fastMathLock === '0'){
-						var botGame = new SlackBot({
-							token: process.env.slack,
-							name: 'Chester'
-						});
-						// lock the file
-						fs.writeFile("lockAnswer", "1", function(err){
-							if(err){
-								return console.log(err)
+					if(botGame !== undefined){
+						botGame.removeAllListeners()
+						if(fastMathLock === '0'){
+							var botGame = new SlackBot({
+								token: process.env.slack,
+								name: 'Chester'
+							});
+							// lock the file
+							fs.writeFile("lockAnswer", "1", function(err){
+								if(err){
+									return console.log(err)
+								}
+							})
+
+							let fastUser = await botGame.getUserById(data.user)
+							let users = await api.get(process.env.chesterapi + '/getallusers')
+							userColl = users.data
+
+							var found = false
+							var oldScore = 0
+							for(var obj of userColl){
+								if(obj['ID'] === data.user){
+									oldScore = obj['Score']
+									found = true
+									break
+								}
 							}
-						})
 
-						let fastUser = await botGame.getUserById(data.user)
-						let users = await api.get(process.env.chesterapi + '/getallusers')
-						userColl = users.data
-
-						var found = false
-						var oldScore = 0
-						for(var obj of userColl){
-							if(obj['ID'] === data.user){
-								oldScore = obj['Score']
-								found = true
-								break
-							}
-						}
-
-						if(found){
-							if(tempScores === []){
-								tempObj = {
-									method: "patch",
-									data: {
-										ID:data.user,
-										Name: fastUser.profile.real_name,
-										Score: oldScore + 1
+							if(found){
+								if(tempScores === []){
+									tempObj = {
+										method: "patch",
+										data: {
+											ID:data.user,
+											Name: fastUser.profile.real_name,
+											Score: oldScore + 1
+										}
 									}
-								}
 
-								tempScores.push(tempObj)
-							}
-							else{
-								var k = 0
-								var foundIndex = 0
-								var find = false
-								for(k; k<tempScores.length; k++){
-									if(tempScores[k].data.ID === data.user){
-										foundIndex = k
-										find = true
+									tempScores.push(tempObj)
+								}
+								else{
+									var k = 0
+									var foundIndex = 0
+									var find = false
+									for(k; k<tempScores.length; k++){
+										if(tempScores[k].data.ID === data.user){
+											foundIndex = k
+											find = true
+										}
 									}
-								}
-								
-								if(find){
-									//save score
-									oldScore = tempScores[foundIndex].data.Score
-									//remove from temp array
-									tempScores.splice(foundIndex, 1)
-								}
 									
-								//save object with updated score
+									if(find){
+										//save score
+										oldScore = tempScores[foundIndex].data.Score
+										//remove from temp array
+										tempScores.splice(foundIndex, 1)
+									}
+										
+									//save object with updated score
+									tempObj = {
+										method: "patch",
+										data: {
+											ID:data.user,
+											Name: fastUser.profile.real_name,
+											Score: oldScore + 1
+										}
+									}
+
+									tempScores.push(tempObj)
+								}
+							}
+							else{	
 								tempObj = {
-									method: "patch",
+									method: "post",
 									data: {
 										ID:data.user,
 										Name: fastUser.profile.real_name,
-										Score: oldScore + 1
+										Score: 1
 									}
 								}
 
 								tempScores.push(tempObj)
 							}
-						}
-						else{	
-							tempObj = {
-								method: "post",
-								data: {
-									ID:data.user,
-									Name: fastUser.profile.real_name,
-									Score: 1
-								}
-							}
 
-							tempScores.push(tempObj)
-						}
+							questionCount = questionCount + 1
+							correctAnswered = true
 
-						questionCount = questionCount + 1
-						correctAnswered = true
-
-						var dataTop = {
-							bot: botGame,
-							username: fastUser.profile.real_name,
-							count: questionCount,
-							scores: tempScores
-						}
-						setTimeout(function(data){
-							var params = {
-								icon_emoji: ':chester:'
-							}
-							data.bot.postMessageToChannel('gamers', 'Meowwww Correct! ' + ' Good job ' + data.username + '!', params)
-							
-							data.bot.removeAllListeners()
-
-							var infoForFunction = {
-								count: data.count,
-								scores: data.scores
+							var dataTop = {
+								bot: botGame,
+								username: fastUser.profile.real_name,
+								count: questionCount,
+								scores: tempScores
 							}
 							setTimeout(function(data){
-								fastMath(data.count, true, data.scores)
-							}, 5000, infoForFunction)
+								var params = {
+									icon_emoji: ':chester:'
+								}
+								data.bot.postMessageToChannel('gamers', 'Meowwww Correct! ' + ' Good job ' + data.username + '!', params)
+								
+								data.bot.removeAllListeners()
 
-						},3000, dataTop)
+								var infoForFunction = {
+									count: data.count,
+									scores: data.scores
+								}
+								setTimeout(function(data){
+									fastMath(data.count, true, data.scores)
+								}, 5000, infoForFunction)
 
-						
-						// unlock the file
-						fs.writeFile("lockAnswer", "0", function(err){
-							if(err){
-								return console.log(err)
-							}
-						})
+							},3000, dataTop)
+
+							
+							// unlock the file
+							fs.writeFile("lockAnswer", "0", function(err){
+								if(err){
+									return console.log(err)
+								}
+							})
+						}
 					}
 				}
 			}
