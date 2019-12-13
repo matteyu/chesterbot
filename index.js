@@ -51,7 +51,8 @@ async function fastMath(count, answered, currScores){
 			if(!isNaN(data.text)){
 				if(anserKey == Number(data.text)){
 					let fastMathLock = await fs.readFileSync('lockAnswer', 'utf8');
-					if(fastMathLock === '0' && fastMathLock !== ''){
+					console.log(fastMathLock)
+					if(fastMathLock === '0'){
 						// lock the file
 						fs.writeFile("lockAnswer", "1", function(err){
 							if(err){
@@ -60,7 +61,6 @@ async function fastMath(count, answered, currScores){
 						})
 
 						let fastUser = await botGame.getUserById(data.user)
-						console.log(fastUser)
 						let users = await api.get(process.env.chesterapi + '/getallusers')
 						userColl = users.data
 
@@ -80,7 +80,7 @@ async function fastMath(count, answered, currScores){
 									method: "patch",
 									data: {
 										ID:data.user,
-										Name: fastUser.profile.display_name,
+										Name: fastUser.profile.real_name,
 										Score: oldScore + 1
 									}
 								}
@@ -110,7 +110,7 @@ async function fastMath(count, answered, currScores){
 									method: "patch",
 									data: {
 										ID:data.user,
-										Name: fastUser.profile.display_name,
+										Name: fastUser.profile.real_name,
 										Score: oldScore + 1
 									}
 								}
@@ -123,7 +123,7 @@ async function fastMath(count, answered, currScores){
 								method: "post",
 								data: {
 									ID:data.user,
-									Name: fastUser.profile.display_name,
+									Name: fastUser.profile.real_name,
 									Score: 1
 								}
 							}
@@ -136,7 +136,7 @@ async function fastMath(count, answered, currScores){
 
 						var dataTop = {
 							bot: botGame,
-							username: fastUser.profile.display_name,
+							username: fastUser.profile.real_name,
 							count: questionCount,
 							scores: tempScores
 						}
