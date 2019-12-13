@@ -1,14 +1,14 @@
 var SlackBot = require('slackbots')
 var api = require('axios')
+var fs = require('fs')
 
 var bot = new SlackBot({
-	token: process.env.slack,
+	token: 'xoxb-733234820710-875199332230-HwTpY83yQw25MwNx3RKmsfRB',
 	name: 'Chester'
 });
 
 var activeGame = false
 var gameLock = false
-
 
 bot.on('start', function(){
 	
@@ -23,7 +23,7 @@ async function fastMath(count, answered, currScores){
 	var tempScores = currScores
 
 	var botGame = new SlackBot({
-		token: process.env.slack,
+		token: 'xoxb-733234820710-875199332230-HwTpY83yQw25MwNx3RKmsfRB',
 		name: 'Chester'
 	});
 	
@@ -39,120 +39,139 @@ async function fastMath(count, answered, currScores){
 		var secondNum = fastMathQuestionGenerator(1, 100)
 		var anserKey = firstNum + secondNum
 		if(questionCount == 1){
-			botGame.postMessageToGroup('chester', questionCount + ') What is ' + firstNum + ' + ' + secondNum + ' ?', params)
+			botGame.postMessageToChannel('chester', questionCount + ') What is ' + firstNum + ' + ' + secondNum + ' ?', params)
 		}
 		
 		if(correctAnswered){
 			correctAnswered = false
-			botGame.postMessageToGroup('chester', questionCount + ') What is ' + firstNum + ' + ' + secondNum + ' ?', params)
+			botGame.postMessageToChannel('chester', questionCount + ') What is ' + firstNum + ' + ' + secondNum + ' ?', params)
 		}
 		
 		botGame.on('message', async function(data){
 			if(!isNaN(data.text)){
 				if(anserKey == Number(data.text)){
-					let fastUser = await botGame.getUserById(data.user)
-					let users = await api.get(process.env.chesterapi + '/getallusers')
-					userColl = users.data
+					let fastMathLock = await fs.readFileSync('lockAnswer', 'utf8');
+					
+					if(fastMathLock === ''){
+						// lock the file
+						fs.writeFile("lockAnswer", "1", function(err){
+							if(err){
+								return console.log(err)
+							}
+						})
 
-					var found = false
-					var oldScore = 0
-					for(var obj of userColl){
-						if(obj['ID'] === data.user){
-							oldScore = obj['Score']
-							found = true
-							break
-						}
-					}
+						let fastUser = await botGame.getUserById(data.user)
+						let users = await api.get('https://chestergo.herokuapp.com/getallusers')
+						userColl = users.data
 
-					if(found){
-						if(tempScores === []){
-							tempObj = {
-								method: "patch",
-								data: {
-									ID:data.user,
-									Name: fastUser.profile.display_name,
-									Score: oldScore + 1
-								}
+						var found = false
+						var oldScore = 0
+						for(var obj of userColl){
+							if(obj['ID'] === data.user){
+								oldScore = obj['Score']
+								found = true
+								break
 							}
-	
-							tempScores.push(tempObj)
 						}
-						else{
-							var k = 0
-							var foundIndex = 0
-							var find = false
-							for(k; k<tempScores.length; k++){
-								if(tempScores[k].data.ID === data.user){
-									foundIndex = k
-									find = true
+
+						if(found){
+							if(tempScores === []){
+								tempObj = {
+									method: "patch",
+									data: {
+										ID:data.user,
+										Name: fastUser.profile.display_name,
+										Score: oldScore + 1
+									}
 								}
+
+								tempScores.push(tempObj)
 							}
-							
-							if(find){
-								//save score
-								oldScore = tempScores[foundIndex].data.Score
-								//remove from temp array
-								tempScores.splice(foundIndex, 1)
-							}
+							else{
+								var k = 0
+								var foundIndex = 0
+								var find = false
+								for(k; k<tempScores.length; k++){
+									if(tempScores[k].data.ID === data.user){
+										foundIndex = k
+										find = true
+									}
+								}
 								
-							//save object with updated score
+								if(find){
+									//save score
+									oldScore = tempScores[foundIndex].data.Score
+									//remove from temp array
+									tempScores.splice(foundIndex, 1)
+								}
+									
+								//save object with updated score
+								tempObj = {
+									method: "patch",
+									data: {
+										ID:data.user,
+										Name: fastUser.profile.display_name,
+										Score: oldScore + 1
+									}
+								}
+
+								tempScores.push(tempObj)
+							}
+						}
+						else{	
 							tempObj = {
-								method: "patch",
+								method: "post",
 								data: {
 									ID:data.user,
 									Name: fastUser.profile.display_name,
-									Score: oldScore + 1
+									Score: 1
 								}
 							}
 
 							tempScores.push(tempObj)
 						}
-					}
-					else{	
-						tempObj = {
-							method: "post",
-							data: {
-								ID:data.user,
-								Name: fastUser.profile.display_name,
-								Score: 1
-							}
-						}
 
-						tempScores.push(tempObj)
-					}
+						questionCount = questionCount + 1
+						correctAnswered = true
 
-					questionCount = questionCount + 1
-					correctAnswered = true
-
-					var dataTop = {
-						bot: botGame,
-						username: fastUser.profile.display_name,
-						count: questionCount,
-						scores: tempScores
-					}
-					setTimeout(function(data){
-						var params = {
-							icon_emoji: ':chester:'
-						}
-						data.bot.postMessageToGroup('chester', 'Meowwww Correct! ' + ' Good job ' + data.username + '!', params)
-						
-						data.bot.removeAllListeners()
-
-						var infoForFunction = {
-							count: data.count,
-							scores: data.scores
+						var dataTop = {
+							bot: botGame,
+							username: fastUser.profile.display_name,
+							count: questionCount,
+							scores: tempScores
 						}
 						setTimeout(function(data){
-							fastMath(data.count, true, data.scores)
-						}, 5000, infoForFunction)
+							var params = {
+								icon_emoji: ':chester:'
+							}
+							data.bot.postMessageToChannel('chester', 'Meowwww Correct! ' + ' Good job ' + data.username + '!', params)
+							
+							data.bot.removeAllListeners()
 
-					},3000, dataTop)
+							var infoForFunction = {
+								count: data.count,
+								scores: data.scores
+							}
+							setTimeout(function(data){
+								fastMath(data.count, true, data.scores)
+							}, 5000, infoForFunction)
+
+						},3000, dataTop)
+
+						
+						// unlock the file
+						fs.writeFile("lockAnswer", "", function(err){
+							if(err){
+								return console.log(err)
+							}
+						})
+					}
 				}
 			}
 		})
 	}
 	else{
-		botGame.postMessageToGroup('chester', 'Well done!! Saving scores to the leaderboard. MEOW! Check your scores with "show me scores chester"', params)
+		botGame.postMessageToChannel('chester', 'Well done!! Saving scores to the leaderboard. MEOW! Check your scores with "show me scores chester"', params)
 
 		setTimeout(async function(){},2000)
 		//save scores to the leaderboard
@@ -160,12 +179,12 @@ async function fastMath(count, answered, currScores){
 		for(ii; ii<tempScores.length; ii++){
 			if(tempScores[ii].method === 'post'){
 				setTimeout(async function(data){
-					await api.post(process.env.chesterapi + '/saveusers', data)
+					await api.post('https://chestergo.herokuapp.com/saveusers', data)
 				},2000,tempScores[ii].data)
 			}
 			else{
 				setTimeout(async function(data){
-					await api.patch(process.env.chesterapi + '/updatescores/' + data.ID, data)
+					await api.patch('https://chestergo.herokuapp.com/updatescores/' + data.ID, data)
 				},2000,tempScores[ii].data)
 			}
 		}
@@ -184,9 +203,9 @@ bot.on('message', async function(data) {
 				var params = {
 					icon_emoji: ':chester:'
 				}
-				bot.postMessageToGroup('chester', '*Lets play!  you are all my :squirrel: now!*', params)
+				bot.postMessageToChannel('chester', '*Lets play!  you are all my :squirrel: now!*', params)
 				setTimeout(function(){
-					bot.postMessageToGroup('chester', 'Randomly choosing a game...', params)
+					bot.postMessageToChannel('chester', 'Randomly choosing a game...', params)
 		
 					setTimeout(function(){
 						setTimeout(function(){
@@ -196,17 +215,17 @@ bot.on('message', async function(data) {
 
 							//randomize games here
 							//Fast Math game
-							bot.postMessageToGroup('chester', '*Fast Math!*', params)
+							bot.postMessageToChannel('chester', '*Fast Math!*', params)
 							setTimeout(function(){
-								bot.postMessageToGroup('chester', '~~~Rules:  I ask 20 questions, fastest person to answer them gets a point!~~~', params)
+								bot.postMessageToChannel('chester', '~~~Rules:  I ask 20 questions, fastest person to answer them gets a point!~~~', params)
 								setTimeout(function(){
-									bot.postMessageToGroup('chester', 'Ready.......', params)
+									bot.postMessageToChannel('chester', 'Ready.......', params)
 		
 									setTimeout(function(){
-										bot.postMessageToGroup('chester', 'GO!', params)
+										bot.postMessageToChannel('chester', 'GO!', params)
 		
 										setTimeout(function(){	
-											fastMath(19, true, [])
+											fastMath(1, false, [])
 											gameLock = false
 										}, 2000)
 		
@@ -234,10 +253,10 @@ bot.on('message', async function(data) {
 			icon_emoji: ':chester:'
 		}
 		var userColl = []
-		let users = await api.get(process.env.chesterapi + '/getallusers')
+		let users = await api.get('https://chestergo.herokuapp.com/getallusers')
 		userColl = users.data
 		userColl.map(obj => {
-			bot.postMessageToGroup('chester', obj.Name + ' : ' + obj.Score + ' points', params)
+			bot.postMessageToChannel('chester', obj.Name + ' : ' + obj.Score + ' points', params)
 		})
 	}
 });
