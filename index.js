@@ -3,7 +3,7 @@ var api = require('axios')
 var fs = require('fs')
 
 var bot = new SlackBot({
-	token: 'xoxb-733234820710-875199332230-HwTpY83yQw25MwNx3RKmsfRB',
+	token: process.env.slack,
 	name: 'Chester'
 });
 
@@ -23,7 +23,7 @@ async function fastMath(count, answered, currScores){
 	var tempScores = currScores
 
 	var botGame = new SlackBot({
-		token: 'xoxb-733234820710-875199332230-HwTpY83yQw25MwNx3RKmsfRB',
+		token: process.env.slack,
 		name: 'Chester'
 	});
 	
@@ -61,7 +61,7 @@ async function fastMath(count, answered, currScores){
 						})
 
 						let fastUser = await botGame.getUserById(data.user)
-						let users = await api.get('https://chestergo.herokuapp.com/getallusers')
+						let users = await api.get(process.env.chesterapi + '/getallusers')
 						userColl = users.data
 
 						var found = false
@@ -179,12 +179,12 @@ async function fastMath(count, answered, currScores){
 		for(ii; ii<tempScores.length; ii++){
 			if(tempScores[ii].method === 'post'){
 				setTimeout(async function(data){
-					await api.post('https://chestergo.herokuapp.com/saveusers', data)
+					await api.post(process.env.chesterapi + '/saveusers', data)
 				},2000,tempScores[ii].data)
 			}
 			else{
 				setTimeout(async function(data){
-					await api.patch('https://chestergo.herokuapp.com/updatescores/' + data.ID, data)
+					await api.patch(process.env.chesterapi + '/updatescores/' + data.ID, data)
 				},2000,tempScores[ii].data)
 			}
 		}
@@ -253,7 +253,7 @@ bot.on('message', async function(data) {
 			icon_emoji: ':chester:'
 		}
 		var userColl = []
-		let users = await api.get('https://chestergo.herokuapp.com/getallusers')
+		let users = await api.get(process.env.chesterapi + '/getallusers')
 		userColl = users.data
 		userColl.map(obj => {
 			bot.postMessageToChannel('chester', obj.Name + ' : ' + obj.Score + ' points', params)
