@@ -90,6 +90,7 @@ async function fastMath(count, answered, currScores){
 							}
 
 							if(found){
+								console.log(tempScores)
 								if(tempScores === []){
 									tempObj = {
 										method: "patch",
