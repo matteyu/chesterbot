@@ -89,9 +89,9 @@ async function fastMath(count, answered, currScores){
 								}
 							}
 
-							if(found){
-								console.log(tempScores)
-								if(tempScores === []){
+							console.log(tempScores)
+							if(tempScores === []){
+								if(found){
 									tempObj = {
 										method: "patch",
 										data: {
@@ -100,27 +100,37 @@ async function fastMath(count, answered, currScores){
 											Score: oldScore + 1
 										}
 									}
-
-									tempScores.push(tempObj)
 								}
 								else{
-									var k = 0
-									var foundIndex = 0
-									var find = false
-									for(k; k<tempScores.length; k++){
-										if(tempScores[k].data.ID === data.user){
-											foundIndex = k
-											find = true
+									tempObj = {
+										method: "post",
+										data: {
+											ID:data.user,
+											Name: fastUser.profile.real_name,
+											Score: oldScore + 1
 										}
 									}
-									
-									if(find){
-										//save score
-										oldScore = tempScores[foundIndex].data.Score
-										//remove from temp array
-										tempScores.splice(foundIndex, 1)
+								}
+								tempScores.push(tempObj)
+							}
+							else{
+								var k = 0
+								var foundIndex = 0
+								var find = false
+								for(k; k<tempScores.length; k++){
+									if(tempScores[k].data.ID === data.user){
+										foundIndex = k
+										find = true
 									}
-										
+								}
+								if(find){
+									//save score
+									oldScore = tempScores[foundIndex].data.Score
+									//remove from temp array
+									tempScores.splice(foundIndex, 1)
+								}
+
+								if(found){
 									//save object with updated score
 									tempObj = {
 										method: "patch",
@@ -130,22 +140,25 @@ async function fastMath(count, answered, currScores){
 											Score: oldScore + 1
 										}
 									}
-
-									tempScores.push(tempObj)
 								}
-							}
-							else{	
-								tempObj = {
-									method: "post",
-									data: {
-										ID:data.user,
-										Name: fastUser.profile.real_name,
-										Score: 1
+								else{
+									//save object with updated score
+									tempObj = {
+										method: "post",
+										data: {
+											ID:data.user,
+											Name: fastUser.profile.real_name,
+											Score: oldScore + 1
+										}
 									}
 								}
-
+								
 								tempScores.push(tempObj)
 							}
+
+
+
+
 
 							questionCount = questionCount + 1
 							correctAnswered = true
