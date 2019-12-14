@@ -89,7 +89,6 @@ async function fastMath(count, answered, currScores){
 								}
 							}
 
-							console.log(tempScores)
 							if(tempScores === []){
 								if(found){
 									tempObj = {
