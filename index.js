@@ -288,6 +288,26 @@ bot.on('message', async function(data) {
 			bot.postMessageToChannel('chester', obj.Name + ' : ' + obj.Score + ' points', params)
 		})
 	}
+
+	if(data.text === 'post poop time chester'){
+		var params = {
+			icon_emoji: ':chester:',
+			attachments: [
+				{
+					"fallback": "Post Poop??",
+					"text": "Uhh...",
+					"image_url": "https://ibin.co/55YoZoPgvp72.jpg",
+					"thumb_url": "https://ibin.co/55YoZoPgvp72.jpg"
+				}
+			]
+		}
+		var userColl = []
+		let users = await api.get(process.env.chesterapi + '/getallusers')
+		userColl = users.data
+		userColl.map(obj => {
+			bot.postMessageToChannel('chester', obj.Name + ' : ' + obj.Score + ' points', params)
+		})
+	}
 });
 
 
