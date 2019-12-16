@@ -301,12 +301,7 @@ bot.on('message', async function(data) {
 				}
 			]
 		}
-		var userColl = []
-		let users = await api.get(process.env.chesterapi + '/getallusers')
-		userColl = users.data
-		userColl.map(obj => {
-			bot.postMessageToChannel('chester', obj.Name + ' : ' + obj.Score + ' points', params)
-		})
+		bot.postMessageToChannel('chester', 'MEEEEEEEOWWWW', params)
 	}
 });
 
