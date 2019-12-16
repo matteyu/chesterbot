@@ -303,6 +303,21 @@ bot.on('message', async function(data) {
 		}
 		bot.postMessageToChannel('chester', 'MEEEEEEEOWWWW', params)
 	}
+
+	if(data.text === 'want a churu chester?'){
+		var params = {
+			icon_emoji: ':chester:',
+			attachments: [
+				{
+					"fallback": "HELL YEEEEEAAAAHH",
+					"text": "HELL YEAAAAAAH",
+					"image_url": "https://ibin.co/55Ysn8eluPbl.jpg",
+					"thumb_url": "https://ibin.co/55Ysn8eluPbl.jpg"
+				}
+			]
+		}
+		bot.postMessageToChannel('chester', 'HELL YEAAAAAAH', params)
+	}
 });
 
 
