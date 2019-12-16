@@ -34,7 +34,7 @@ async function fastMath(count, answered, currScores){
 	var questionCount = count;
 	var correctAnswered = answered;
 	
-	if(questionCount != 21){
+	if(questionCount != 11){
 		var firstNum = fastMathQuestionGenerator(1, 100)
 		var secondNum = fastMathQuestionGenerator(1, 100)
 		var anserKey = firstNum + secondNum
@@ -219,7 +219,7 @@ async function fastMath(count, answered, currScores){
 		}
 	}
 
-	if(questionCount == 21){
+	if(questionCount == 11){
 		return
 	}
 }
@@ -246,7 +246,7 @@ bot.on('message', async function(data) {
 							//Fast Math game
 							bot.postMessageToChannel('chester', '*Fast Math!*', params)
 							setTimeout(function(){
-								bot.postMessageToChannel('chester', '~~~Rules:  I ask 20 questions, fastest person to answer them gets a point!~~~', params)
+								bot.postMessageToChannel('chester', '~~~Rules:  I ask 10 questions, fastest person to answer them gets a point!~~~', params)
 								setTimeout(function(){
 									bot.postMessageToChannel('chester', 'Ready.......', params)
 		
